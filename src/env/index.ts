@@ -11,6 +11,12 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.url(),
 
   CLIENT_URL: z.url(),
+
+  SMTP_HOST: z.string().min(1).default('localhost'),
+  SMTP_PORT: z.coerce.number().default(1025),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  SMTP_FROM: z.email().default('noreply@flowy.local'),
 })
 
 const _env = envSchema.safeParse(Bun.env)
