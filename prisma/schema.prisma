@@ -24,6 +24,9 @@ model Users {
   sessions      Sessions[]
   accounts      Accounts[]
 
+  members     Members[]
+  invitations Invitations[]
+
   @@unique([email])
   @@map("users")
 }
@@ -38,6 +41,8 @@ model Sessions {
   userAgent String?
   userId    String
   users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activeOrganizationId String?
 
   @@unique([token])
   @@index([userId])
@@ -74,4 +79,49 @@ model Verifications {
 
   @@index([identifier])
   @@map("verifications")
+}
+
+model Organizations {
+  id          String        @id
+  name        String
+  slug        String
+  logo        String?
+  createdAt   DateTime
+  metadata    String?
+  members     Members[]
+  invitations Invitations[]
+
+  @@unique([slug])
+  @@map("organizations")
+}
+
+model Members {
+  id             String        @id
+  organizationId String
+  organizations  Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  users          Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String        @default("member")
+  createdAt      DateTime
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("members")
+}
+
+model Invitations {
+  id             String        @id
+  organizationId String
+  organizations  Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String        @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime      @default(now())
+  inviterId      String
+  users          Users         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitations")
 }
