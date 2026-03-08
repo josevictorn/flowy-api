@@ -92,6 +92,7 @@ model Organizations {
   members     Members[]
   invitations Invitations[]
   products    Product[]
+  prices      Price[]
 
   @@unique([slug])
   @@map("organizations")
@@ -141,6 +142,7 @@ model Product {
 
   prices Price[]
 
+  @@index([organizationsId, id])
   @@map("products")
 }
 
@@ -167,8 +169,11 @@ model Price {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
+  product         Product       @relation(fields: [productId], references: [id])
+  productId       String
+  organization    Organizations @relation(fields: [organizationsId], references: [id])
+  organizationsId String
 
+  @@index([organizationsId, productId])
   @@map("prices")
 }
