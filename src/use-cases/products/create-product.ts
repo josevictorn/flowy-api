@@ -6,6 +6,7 @@ import type {
   BillingInterval,
   BillingScheme,
 } from '../../../generated/prisma/enums'
+import { IntervalRequiredError } from '../errors/interval-required-error'
 import { OrganizationNotFoundError } from '../errors/organization-not-found-error'
 
 interface CreateProductRequest {
@@ -19,7 +20,7 @@ interface CreateProductRequest {
 }
 
 type CreateProductResponse = Either<
-  OrganizationNotFoundError,
+  OrganizationNotFoundError | IntervalRequiredError,
   { product: Product; price: Price }
 >
 
@@ -43,6 +44,10 @@ export class CreateProductUseCase {
 
     if (!organization) {
       return left(new OrganizationNotFoundError())
+    }
+
+    if (billingScheme === 'RECURRING' && !interval) {
+      return left(new IntervalRequiredError())
     }
 
     const product = await this.productRepository.createWithPrice(
