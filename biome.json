@@ -23,6 +23,9 @@
       },
       "suspicious": {
         "noAssignInExpressions": "off"
+      },
+      "style": {
+        "noParameterProperties": "off"
       }
     }
   },
