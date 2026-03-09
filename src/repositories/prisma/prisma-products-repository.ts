@@ -1,0 +1,34 @@
+import { prisma } from '@/lib/prisma'
+import type {
+  PriceUncheckedCreateInput,
+  ProductUncheckedCreateInput,
+} from '../../../generated/prisma/models'
+import type { ProductsRepository } from '../products-repository'
+
+export class PrismaProductsRepository implements ProductsRepository {
+  async create(data: ProductUncheckedCreateInput) {
+    const product = await prisma.product.create({
+      data,
+    })
+
+    return product
+  }
+
+  async createWithPrice(
+    productData: ProductUncheckedCreateInput,
+    priceData: Omit<PriceUncheckedCreateInput, 'productId'> & {
+      productId?: string
+    }
+  ) {
+    const result = await prisma.$transaction(async (tx) => {
+      const product = await tx.product.create({ data: productData })
+      const price = await tx.price.create({
+        data: { ...priceData, productId: product.id },
+      })
+
+      return { product, price }
+    })
+
+    return { product: result.product, price: result.price }
+  }
+}
