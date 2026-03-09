@@ -3,6 +3,7 @@ import openapi from '@elysiajs/openapi'
 import { Elysia } from 'elysia'
 import { z } from 'zod'
 import { env } from './env'
+import { createProduct } from './http/controllers/products/create'
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth'
 
 const app = new Elysia()
@@ -20,12 +21,12 @@ const app = new Elysia()
       case 'VALIDATION': {
         console.log(error)
 
-        return { code, message: 'Internal Server Error' }
+        return { code, message: error.all }
       }
       default: {
         console.error(error)
 
-        return status(500, 'Internal Server Error')
+        return status(500, { message: 'Internal Server Error' })
       }
     }
   })
@@ -38,6 +39,7 @@ const app = new Elysia()
     })
   )
   .use(betterAuthPlugin)
+  .use(createProduct)
   .get(
     '/users/:id',
     ({ params, user }) => {
