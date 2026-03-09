@@ -75,6 +75,9 @@ export const createProduct = new Elysia().use(betterAuthPlugin).post(
           organizationsId: z.string(),
         }),
       }),
+      400: z.object({
+        message: z.string(),
+      }),
       404: z.object({
         message: z.string(),
       }),
