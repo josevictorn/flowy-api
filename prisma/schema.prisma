@@ -82,14 +82,17 @@ model Verifications {
 }
 
 model Organizations {
-  id          String        @id
-  name        String
-  slug        String
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
+  id        String   @id
+  name      String
+  slug      String
+  logo      String?
+  createdAt DateTime
+  metadata  String?
+
   members     Members[]
   invitations Invitations[]
+  products    Product[]
+  prices      Price[]
 
   @@unique([slug])
   @@map("organizations")
@@ -124,4 +127,53 @@ model Invitations {
   @@index([organizationId])
   @@index([email])
   @@map("invitations")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization    Organizations @relation(fields: [organizationsId], references: [id])
+  organizationsId String
+
+  prices Price[]
+
+  @@index([organizationsId, id])
+  @@map("products")
+}
+
+enum BillingScheme {
+  ONE_TIME
+  RECURRING
+}
+
+enum BillingInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMIANNUALLY
+  YEARLY
+}
+
+model Price {
+  id            String          @id @default(uuid())
+  billingScheme BillingScheme
+  interval      BillingInterval
+  unitAmount    Int
+  currency      String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  product         Product       @relation(fields: [productId], references: [id])
+  productId       String
+  organization    Organizations @relation(fields: [organizationsId], references: [id])
+  organizationsId String
+
+  @@index([organizationsId, productId])
+  @@map("prices")
 }
