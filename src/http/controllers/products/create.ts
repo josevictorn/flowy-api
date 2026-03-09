@@ -1,6 +1,7 @@
 import Elysia from 'elysia'
 import z from 'zod'
 import { betterAuthPlugin } from '@/http/plugins/better-auth'
+import { IntervalRequiredError } from '@/use-cases/errors/interval-required-error'
 import { OrganizationNotFoundError } from '@/use-cases/errors/organization-not-found-error'
 import { makeCreateProductUseCase } from '@/use-cases/products/factories/make-create-product-use-case'
 import {
@@ -33,9 +34,11 @@ export const createProduct = new Elysia().use(betterAuthPlugin).post(
         case OrganizationNotFoundError:
           set.status = 404
           return { message: error.message }
+        case IntervalRequiredError:
+          set.status = 400
+          return { message: error.message }
         default:
-          set.status = 500
-          return { message: 'Internal server error' }
+          throw new Error(error.message)
       }
     }
 
