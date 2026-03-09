@@ -81,4 +81,36 @@ describe('Create Product Use Case', () => {
       },
     })
   })
+
+  it('should not be able to create a new product with non existing organization', async () => {
+    const result = await sut.execute({
+      name: 'Product 1',
+      description: 'Description of Product 1',
+      billingScheme: 'ONE_TIME',
+      unitAmount: 100,
+      currency: 'BRL',
+      organizationId: 'non-existing-organization-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value.constructor.name).toBe('OrganizationNotFoundError')
+  })
+
+  it('should not be able to create a new product with recurring billing scheme without interval', async () => {
+    const organization = makeOrganization()
+
+    await organizationsRepository.create(organization)
+
+    const result = await sut.execute({
+      name: 'Product 1',
+      description: 'Description of Product 1',
+      billingScheme: 'RECURRING',
+      unitAmount: 100,
+      currency: 'BRL',
+      organizationId: organization.id,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value.constructor.name).toBe('IntervalRequiredError')
+  })
 })
