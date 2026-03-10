@@ -48,6 +48,8 @@ export const CreateProductController = new Elysia().use(betterAuthPlugin).post(
   {
     auth: true,
     detail: {
+      summary: 'Create Product',
+      description: 'Create a new product',
       tags: ['Products'],
     },
     body: z.object({

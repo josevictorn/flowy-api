@@ -42,7 +42,8 @@ export const GetProductUseCase = new Elysia().use(betterAuthPlugin).get(
   {
     auth: true,
     detail: {
-      name: 'Get Product',
+      summary: 'Get Product',
+      description: 'Get a product by its ID',
       tags: ['Products'],
     },
     body: z.void(),
