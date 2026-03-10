@@ -36,14 +36,16 @@ describe('Create Product Use Case', () => {
         name: 'Product 1',
         description: 'Description of Product 1',
         organizationsId: organization.id,
-      },
-      price: {
-        id: expect.any(String),
-        billingScheme: 'ONE_TIME',
-        interval: null,
-        unitAmount: 100,
-        currency: 'BRL',
-        organizationsId: organization.id,
+        prices: [
+          {
+            id: expect.any(String),
+            billingScheme: 'ONE_TIME',
+            interval: null,
+            unitAmount: 100,
+            currency: 'BRL',
+            organizationsId: organization.id,
+          },
+        ],
       },
     })
   })
@@ -70,14 +72,16 @@ describe('Create Product Use Case', () => {
         name: 'Product 1',
         description: 'Description of Product 1',
         organizationsId: organization.id,
-      },
-      price: {
-        id: expect.any(String),
-        billingScheme: 'RECURRING',
-        interval: 'MONTHLY',
-        unitAmount: 100,
-        currency: 'BRL',
-        organizationsId: organization.id,
+        prices: [
+          {
+            id: expect.any(String),
+            billingScheme: 'RECURRING',
+            interval: 'MONTHLY',
+            unitAmount: 100,
+            currency: 'BRL',
+            organizationsId: organization.id,
+          },
+        ],
       },
     })
   })
