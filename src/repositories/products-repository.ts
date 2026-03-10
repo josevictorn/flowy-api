@@ -8,4 +8,5 @@ export interface ProductsRepository {
       productId?: string
     }
   ): Promise<{ product: Product; price: Price }>
+  findById(id: string): Promise<Product | null>
 }

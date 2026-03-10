@@ -48,7 +48,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
       billingScheme: priceData.billingScheme,
       interval: priceData.interval ?? null,
       unitAmount: priceData.unitAmount ?? 0,
-      currency: priceData.currency ?? 'usd',
+      currency: priceData.currency ?? 'brl',
       createdAt: new Date(),
       updatedAt: new Date(),
       productId,
@@ -60,5 +60,15 @@ export class InMemoryProductsRepository implements ProductsRepository {
     await this.products.push(product)
 
     return { product, price }
+  }
+
+  findById(id: string) {
+    const product = this.products.find((product) => product.id === id)
+
+    if (!product) {
+      return Promise.resolve(null)
+    }
+
+    return Promise.resolve(product)
   }
 }
