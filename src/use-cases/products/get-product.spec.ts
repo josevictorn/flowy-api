@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { InMemoryOrganizationsRepository } from '@/repositories/in-memory/in-memory-organizations-repository'
-import { InMemoryPricesRepository } from '@/repositories/in-memory/in-memory-prices-repository'
 import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'
 import { makeOrganization } from '@/test/factories/make-organization'
 import { makePriceWithPerUnitBilling } from '@/test/factories/make-price'
@@ -11,19 +10,13 @@ import { GetProductUseCase } from './get-product'
 
 let productRepository: InMemoryProductsRepository
 let organizationsRepository: InMemoryOrganizationsRepository
-let pricesRepository: InMemoryPricesRepository
 let sut: GetProductUseCase
 
 describe('Get Product Use Case', () => {
   beforeEach(() => {
     productRepository = new InMemoryProductsRepository()
     organizationsRepository = new InMemoryOrganizationsRepository()
-    pricesRepository = new InMemoryPricesRepository()
-    sut = new GetProductUseCase(
-      productRepository,
-      organizationsRepository,
-      pricesRepository
-    )
+    sut = new GetProductUseCase(productRepository, organizationsRepository)
   })
 
   it('should be able to get a product by id', async () => {
@@ -51,15 +44,6 @@ describe('Get Product Use Case', () => {
         organizationsId: organization.id,
       }
     )
-    await pricesRepository.create({
-      id: price.id,
-      billingScheme: price.billingScheme,
-      interval: price.interval,
-      unitAmount: price.unitAmount,
-      currency: price.currency,
-      productId: product.id,
-      organizationsId: organization.id,
-    })
 
     const result = await sut.execute({
       productId: product.id,
@@ -73,13 +57,15 @@ describe('Get Product Use Case', () => {
         name: product.name,
         description: product.description,
         organizationsId: organization.id,
-      },
-      price: {
-        id: price.id,
-        billingScheme: price.billingScheme,
-        unitAmount: price.unitAmount,
-        currency: price.currency,
-        organizationsId: organization.id,
+        prices: [
+          {
+            id: price.id,
+            billingScheme: price.billingScheme,
+            unitAmount: price.unitAmount,
+            currency: price.currency,
+            organizationsId: organization.id,
+          },
+        ],
       },
     })
   })

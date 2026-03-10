@@ -1,8 +1,9 @@
 import type { OrganizationsRepository } from '@/repositories/organizations-repository'
-import type { PricesRepository } from '@/repositories/prices-repository'
-import type { ProductsRepository } from '@/repositories/products-repository'
+import type {
+  ProductsRepository,
+  ProductWithPrices,
+} from '@/repositories/products-repository'
 import { type Either, left, right } from '@/utils/either'
-import type { Price, Product } from '../../../generated/prisma/client'
 import { OrganizationNotFoundError } from '../errors/organization-not-found-error'
 import { ProductNotFoundError } from '../errors/product-not-found-error'
 
@@ -13,14 +14,13 @@ interface GetProductRequest {
 
 type GetProductResponse = Either<
   OrganizationNotFoundError | ProductNotFoundError,
-  { product: Product; price: Price | null }
+  { product: ProductWithPrices }
 >
 
 export class GetProductUseCase {
   constructor(
     private readonly productRepository: ProductsRepository,
-    private readonly organizationsRepository: OrganizationsRepository,
-    private readonly pricesRepository: PricesRepository
+    private readonly organizationsRepository: OrganizationsRepository
   ) {}
 
   async execute({
@@ -40,8 +40,6 @@ export class GetProductUseCase {
       return left(new ProductNotFoundError())
     }
 
-    const price = await this.pricesRepository.findByProductId(productId)
-
-    return right({ product, price })
+    return right({ product })
   }
 }
