@@ -11,7 +11,7 @@
     "db:generate": "bunx --bun prisma generate",
     "prepare": "husky",
     "test:unit": "bun test ./src/use-cases",
-    "test:e2e": "bun test ./src/http/controllers"
+    "test:e2e": "bun test ./src/http/controllers --preload ./src/test/setup-e2e.ts"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
