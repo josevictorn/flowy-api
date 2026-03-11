@@ -13,4 +13,5 @@ export interface ProductsRepository {
     }
   ): Promise<{ product: Product; price: Price }>
   findById(id: string): Promise<ProductWithPrices | null>
+  save: (product: Product) => Promise<Product>
 }

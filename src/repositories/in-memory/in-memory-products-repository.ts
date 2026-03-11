@@ -8,7 +8,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
   private readonly products: ProductWithPrices[] = []
   private readonly prices: Price[] = []
 
-  async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
+  async create(data: Prisma.ProductUncheckedCreateInput) {
     const product = {
       id: data.id || crypto.randomUUID(),
       name: data.name,
@@ -71,6 +71,19 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
     if (!product) {
       return Promise.resolve(null)
+    }
+
+    return Promise.resolve(product)
+  }
+
+  save(product: Product) {
+    const productIndex = this.products.findIndex((p) => p.id === product.id)
+
+    if (productIndex >= 0) {
+      this.products[productIndex] = {
+        ...this.products[productIndex],
+        ...product,
+      }
     }
 
     return Promise.resolve(product)
