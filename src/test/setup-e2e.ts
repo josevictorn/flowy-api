@@ -1,27 +1,38 @@
-import { afterAll, beforeAll } from 'bun:test'
+import { afterEach, beforeEach } from 'bun:test'
 import { execSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { prisma, refreshPrismaInstance } from '@/lib/prisma'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '../../generated/prisma/client'
 
-const schemaName = `test_${randomUUID().replace(/-/g, '_')}`
+const schemaId = randomUUID()
 
-beforeAll(() => {
-  const url = new URL(Bun.env.DATABASE_URL || 'test')
-  url.searchParams.set('schema', schemaName)
+function generateUniqueDatabaseURL(schemaId: string) {
+  const url = new URL(Bun.env.DATABASE_URL ?? '')
+  url.searchParams.set('schema', schemaId)
+  return url.toString()
+}
 
-  Bun.env.DATABASE_URL = url.toString()
-  Bun.env.DATABASE_SCHEMA = schemaName
+const databaseURL = generateUniqueDatabaseURL(schemaId)
 
-  execSync('bunx prisma db push', {
-    env: { ...Bun.env },
-  })
+process.env.DATABASE_URL = databaseURL
+process.env.DATABASE_SCHEMA = schemaId
 
-  refreshPrismaInstance()
+const adapter = new PrismaPg(
+  { connectionString: databaseURL },
+  { schema: schemaId }
+)
+
+export const prisma = new PrismaClient({
+  adapter,
 })
 
-afterAll(async () => {
-  await prisma.$executeRawUnsafe(
-    `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE;`
-  )
+beforeEach(() => {
+  execSync('bunx prisma migrate deploy', {
+    env: { ...process.env, DATABASE_URL: databaseURL },
+  })
+})
+
+afterEach(async () => {
+  await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE`)
   await prisma.$disconnect()
 })
