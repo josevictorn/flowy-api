@@ -137,7 +137,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  organization    Organizations @relation(fields: [organizationsId], references: [id])
+  organization    Organizations @relation(fields: [organizationsId], references: [id], onDelete: Cascade)
   organizationsId String
 
   prices Price[]
@@ -169,9 +169,9 @@ model Price {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 
-  product         Product       @relation(fields: [productId], references: [id])
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId       String
-  organization    Organizations @relation(fields: [organizationsId], references: [id])
+  organization    Organizations @relation(fields: [organizationsId], references: [id], onDelete: Cascade)
   organizationsId String
 
   @@index([organizationsId, productId])
