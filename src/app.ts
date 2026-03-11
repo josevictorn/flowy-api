@@ -4,7 +4,7 @@ import { Elysia } from 'elysia'
 import { z } from 'zod'
 import { env } from './env'
 import { CreateProductController } from './http/controllers/products/create'
-import { GetProductUseCase } from './http/controllers/products/get'
+import { GetProductController } from './http/controllers/products/get'
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth'
 
 const app = new Elysia()
@@ -41,7 +41,7 @@ const app = new Elysia()
   )
   .use(betterAuthPlugin)
   .use(CreateProductController)
-  .use(GetProductUseCase)
+  .use(GetProductController)
   .get(
     '/users/:id',
     ({ params, user }) => {

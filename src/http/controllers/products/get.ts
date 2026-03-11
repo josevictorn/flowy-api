@@ -9,7 +9,7 @@ import {
   BillingScheme,
 } from '../../../../generated/prisma/enums'
 
-export const GetProductUseCase = new Elysia().use(betterAuthPlugin).get(
+export const GetProductController = new Elysia().use(betterAuthPlugin).get(
   '/products/:id',
   async ({ params, set, session }) => {
     const { id } = params
