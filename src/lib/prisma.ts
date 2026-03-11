@@ -1,13 +1,16 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../../generated/prisma/client'
 
-const connectionString = `${Bun.env.DATABASE_URL}`
+export const createPrisma = () => {
+  const connectionString = `${Bun.env.DATABASE_URL}`
 
-const adapter = new PrismaPg(
-  { connectionString },
-  { schema: Bun.env.DATABASE_SCHEMA }
-)
+  const adapter = new PrismaPg({ connectionString })
 
-const prisma = new PrismaClient({ adapter })
+  return new PrismaClient({ adapter })
+}
 
-export { prisma }
+export let prisma = createPrisma()
+
+export const refreshPrismaInstance = () => {
+  prisma = createPrisma()
+}

@@ -5,7 +5,6 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3333),
 
   DATABASE_URL: z.url().startsWith('postgresql://'),
-  DATABASE_SCHEMA: z.string().min(1),
 
   BETTER_AUTH_SECRET: z.string().min(1),
   BETTER_AUTH_URL: z.url(),
