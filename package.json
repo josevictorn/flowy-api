@@ -9,7 +9,9 @@
     "db:migrate": "bunx --bun prisma migrate dev",
     "db:studio": "bunx --bun prisma studio ",
     "db:generate": "bunx --bun prisma generate",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:unit": "bun test ./src/use-cases",
+    "test:e2e": "bun test ./src/http/controllers --preload ./src/test/setup-e2e.ts"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",

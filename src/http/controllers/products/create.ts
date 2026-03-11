@@ -9,7 +9,7 @@ import {
   BillingScheme,
 } from '../../../../generated/prisma/enums'
 
-export const createProduct = new Elysia().use(betterAuthPlugin).post(
+export const CreateProductController = new Elysia().use(betterAuthPlugin).post(
   '/products',
   async ({ body, set, session }) => {
     const { name, description, billingScheme, interval, unitAmount, currency } =
@@ -48,6 +48,8 @@ export const createProduct = new Elysia().use(betterAuthPlugin).post(
   {
     auth: true,
     detail: {
+      summary: 'Create Product',
+      description: 'Create a new product',
       tags: ['Products'],
     },
     body: z.object({

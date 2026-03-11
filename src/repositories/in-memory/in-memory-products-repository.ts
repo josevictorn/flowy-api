@@ -1,8 +1,11 @@
 import type { Price, Prisma, Product } from '../../../generated/prisma/client'
-import type { ProductsRepository } from '../products-repository'
+import type {
+  ProductsRepository,
+  ProductWithPrices,
+} from '../products-repository'
 
 export class InMemoryProductsRepository implements ProductsRepository {
-  private readonly products: (Product & { price?: Price })[] = []
+  private readonly products: ProductWithPrices[] = []
   private readonly prices: Price[] = []
 
   async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
@@ -14,6 +17,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
       organizationsId: data.organizationsId,
       createdAt: new Date(),
       updatedAt: new Date(),
+      prices: [],
     }
 
     await this.products.push(product)
@@ -33,7 +37,19 @@ export class InMemoryProductsRepository implements ProductsRepository {
       priceData.organizationsId ??
       crypto.randomUUID()
 
-    const product: Product & { price?: Price } = {
+    const price: Price = {
+      id: priceData.id ?? crypto.randomUUID(),
+      billingScheme: priceData.billingScheme,
+      interval: priceData.interval ?? null,
+      unitAmount: priceData.unitAmount ?? 0,
+      currency: priceData.currency ?? 'brl',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      productId,
+      organizationsId: organizationId,
+    }
+
+    const product = {
       id: productId,
       name: productData.name,
       active: productData.active ?? true,
@@ -41,24 +57,22 @@ export class InMemoryProductsRepository implements ProductsRepository {
       organizationsId: organizationId,
       createdAt: new Date(),
       updatedAt: new Date(),
-    }
-
-    const price: Price = {
-      id: priceData.id ?? crypto.randomUUID(),
-      billingScheme: priceData.billingScheme,
-      interval: priceData.interval ?? null,
-      unitAmount: priceData.unitAmount ?? 0,
-      currency: priceData.currency ?? 'usd',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      productId,
-      organizationsId: organizationId,
+      prices: [price],
     }
 
     await this.prices.push(price)
-    product.price = price
     await this.products.push(product)
 
     return { product, price }
+  }
+
+  findById(id: string): Promise<ProductWithPrices | null> {
+    const product = this.products.find((product) => product.id === id)
+
+    if (!product) {
+      return Promise.resolve(null)
+    }
+
+    return Promise.resolve(product)
   }
 }
