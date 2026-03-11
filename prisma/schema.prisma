@@ -161,13 +161,13 @@ enum BillingInterval {
 }
 
 model Price {
-  id            String          @id @default(uuid())
+  id            String           @id @default(uuid())
   billingScheme BillingScheme
-  interval      BillingInterval
+  interval      BillingInterval?
   unitAmount    Int
   currency      String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   product         Product       @relation(fields: [productId], references: [id])
   productId       String
