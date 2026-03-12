@@ -6,7 +6,7 @@ export function makeProduct(overrides?: Partial<Product>) {
     id: crypto.randomUUID(),
     name: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
-    organizationId: crypto.randomUUID(),
+    organizationsId: crypto.randomUUID(),
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,

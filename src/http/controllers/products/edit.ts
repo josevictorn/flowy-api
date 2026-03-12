@@ -3,21 +3,20 @@ import z from 'zod'
 import { betterAuthPlugin } from '@/http/plugins/better-auth'
 import { OrganizationNotFoundError } from '@/use-cases/errors/organization-not-found-error'
 import { ProductNotFoundError } from '@/use-cases/errors/product-not-found-error'
-import { makeGetProductUseCase } from '@/use-cases/products/factories/make-get-product-use-case'
-import {
-  BillingInterval,
-  BillingScheme,
-} from '../../../../generated/prisma/enums'
+import { makeEditProductUseCase } from '@/use-cases/products/factories/make-edit-product-use-case'
 
-export const GetProductController = new Elysia().use(betterAuthPlugin).get(
+export const EditProductController = new Elysia().use(betterAuthPlugin).patch(
   '/products/:id',
-  async ({ params, set, session }) => {
+  async ({ body, params, set, session }) => {
+    const { name, description } = body
     const { id } = params
 
-    const getProductUseCase = makeGetProductUseCase()
+    const editProductUseCase = makeEditProductUseCase()
 
-    const result = await getProductUseCase.execute({
+    const result = await editProductUseCase.execute({
       productId: id,
+      name,
+      description,
       organizationId: session?.activeOrganizationId ?? '',
     })
 
@@ -25,10 +24,10 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
       const error = result.value
 
       switch (error.constructor) {
-        case ProductNotFoundError:
+        case OrganizationNotFoundError:
           set.status = 404
           return { message: error.message }
-        case OrganizationNotFoundError:
+        case ProductNotFoundError:
           set.status = 404
           return { message: error.message }
         default:
@@ -36,17 +35,19 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
       }
     }
 
-    set.status = 200
     return result.value
   },
   {
     auth: true,
     detail: {
-      summary: 'Get Product',
-      description: 'Get a product by its ID',
+      summary: 'Edit Product',
+      description: 'Edit an existing product',
       tags: ['Products'],
     },
-    body: z.void(),
+    body: z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+    }),
     params: z.object({
       id: z.string(),
     }),
@@ -56,24 +57,12 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
           id: z.string(),
           name: z.string(),
           description: z.string().nullable(),
-          active: z.boolean(),
           organizationsId: z.string(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
-          prices: z.array(
-            z.object({
-              id: z.string(),
-              billingScheme: z.enum(BillingScheme),
-              interval: z.enum(BillingInterval).nullable(),
-              unitAmount: z.number(),
-              currency: z.string(),
-              organizationsId: z.string(),
-              productId: z.string(),
-              createdAt: z.date(),
-              updatedAt: z.date(),
-            })
-          ),
+          active: z.boolean(),
         }),
+      }),
+      400: z.object({
+        message: z.string(),
       }),
       404: z.object({
         message: z.string(),

@@ -44,4 +44,18 @@ export class PrismaProductsRepository implements ProductsRepository {
 
     return product
   }
+
+  async save(data: ProductUncheckedCreateInput) {
+    const product = await prisma.product.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        name: data.name,
+        description: data.description,
+      },
+    })
+
+    return product
+  }
 }
