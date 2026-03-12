@@ -50,7 +50,10 @@ export class PrismaProductsRepository implements ProductsRepository {
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        name: data.name,
+        description: data.description,
+      },
     })
 
     return product
