@@ -5,7 +5,8 @@ import type {
 } from '../products-repository'
 
 export class InMemoryProductsRepository implements ProductsRepository {
-  private readonly products: ProductWithPrices[] = []
+  // biome-ignore lint/style/useConsistentMemberAccessibility: This is a test class, so we can keep the products array public for easier access in tests.
+  public products: ProductWithPrices[] = []
   private readonly prices: Price[] = []
 
   async create(data: Prisma.ProductUncheckedCreateInput) {

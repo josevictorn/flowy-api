@@ -1,11 +1,11 @@
 import cors from '@elysiajs/cors'
 import openapi from '@elysiajs/openapi'
 import { Elysia } from 'elysia'
-import { z } from 'zod'
 import { env } from './env'
 import { CreateProductController } from './http/controllers/products/create'
 import { EditProductController } from './http/controllers/products/edit'
 import { GetProductController } from './http/controllers/products/get'
+import { InactivateProductController } from './http/controllers/products/inactivate'
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth'
 
 const app = new Elysia()
@@ -44,36 +44,6 @@ const app = new Elysia()
   .use(CreateProductController)
   .use(GetProductController)
   .use(EditProductController)
-  .get(
-    '/users/:id',
-    ({ params, user }) => {
-      const userId = params.id
-
-      const authenticatedUser = user.name
-
-      console.log({ authenticatedUser })
-
-      return {
-        id: userId,
-        name: authenticatedUser,
-      }
-    },
-    {
-      auth: true,
-      detail: {
-        description: 'Get user by ID',
-        tags: ['User'],
-      },
-      params: z.object({
-        id: z.string(),
-      }),
-      response: {
-        200: z.object({
-          id: z.string(),
-          name: z.string(),
-        }),
-      },
-    }
-  )
+  .use(InactivateProductController)
 
 export { app }
