@@ -4,6 +4,7 @@ import { Elysia } from 'elysia'
 import { env } from './env'
 import { CreateProductController } from './http/controllers/products/create'
 import { EditProductController } from './http/controllers/products/edit'
+import { FetchProductsController } from './http/controllers/products/fetch'
 import { GetProductController } from './http/controllers/products/get'
 import { InactivateProductController } from './http/controllers/products/inactivate'
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth'
@@ -45,5 +46,6 @@ const app = new Elysia()
   .use(GetProductController)
   .use(EditProductController)
   .use(InactivateProductController)
+  .use(FetchProductsController)
 
 export { app }
