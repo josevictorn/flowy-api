@@ -77,6 +77,21 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return Promise.resolve(product)
   }
 
+  findManyByOrganizationId(
+    organizationId: string,
+    page: number
+  ): Promise<ProductWithPrices[]> {
+    const products = this.products.filter(
+      (product) => product.organizationsId === organizationId
+    )
+
+    const itemsPerPage = 20
+    const startIndex = (page - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+
+    return Promise.resolve(products.slice(startIndex, endIndex))
+  }
+
   save(product: Product) {
     const productIndex = this.products.findIndex((p) => p.id === product.id)
 
