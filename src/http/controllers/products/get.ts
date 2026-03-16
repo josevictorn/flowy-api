@@ -1,6 +1,7 @@
 import Elysia from 'elysia'
 import z from 'zod'
 import { betterAuthPlugin } from '@/http/plugins/better-auth'
+import { ProductPresenter } from '@/http/presenters/product-presenter'
 import { OrganizationNotFoundError } from '@/use-cases/errors/organization-not-found-error'
 import { ProductNotFoundError } from '@/use-cases/errors/product-not-found-error'
 import { makeGetProductUseCase } from '@/use-cases/products/factories/make-get-product-use-case'
@@ -37,7 +38,9 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
     }
 
     set.status = 200
-    return result.value
+    return {
+      product: ProductPresenter.toHTTP(result.value.product),
+    }
   },
   {
     auth: true,
@@ -58,8 +61,8 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
           description: z.string().nullable(),
           active: z.boolean(),
           organizationsId: z.string(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
+          createdAt: z.iso.datetime(),
+          updatedAt: z.iso.datetime(),
           prices: z.array(
             z.object({
               id: z.string(),
@@ -69,8 +72,8 @@ export const GetProductController = new Elysia().use(betterAuthPlugin).get(
               currency: z.string(),
               organizationsId: z.string(),
               productId: z.string(),
-              createdAt: z.date(),
-              updatedAt: z.date(),
+              createdAt: z.iso.datetime(),
+              updatedAt: z.iso.datetime(),
             })
           ),
         }),

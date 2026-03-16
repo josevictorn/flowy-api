@@ -26,6 +26,9 @@
       },
       "style": {
         "noParameterProperties": "off"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "off"
       }
     }
   },
