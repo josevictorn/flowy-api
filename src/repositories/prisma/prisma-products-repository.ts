@@ -45,6 +45,21 @@ export class PrismaProductsRepository implements ProductsRepository {
     return product
   }
 
+  async findManyByOrganizationId(organizationsId: string, page: number) {
+    const products = await prisma.product.findMany({
+      where: {
+        organizationsId,
+      },
+      include: {
+        prices: true,
+      },
+      skip: (page - 1) * 20,
+      take: 20,
+    })
+
+    return products
+  }
+
   async save(data: ProductUncheckedCreateInput) {
     const product = await prisma.product.update({
       where: {
